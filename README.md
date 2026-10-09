@@ -14,7 +14,7 @@ ChatGPT 對話選取與匯出工具：PDF、Markdown、JSON。繁體中文介面
 
 ## Chrome 安裝
 
-1. 從 [Releases](../../releases/latest) 下載 Chrome ZIP，解壓縮。
+1. 從 [Releases](https://github.com/Joe05520/chat-conversation-exporter/releases) 下載 Chrome ZIP，解壓縮。
 2. 開啟 `chrome://extensions`，啟用開發人員模式。
 3. 按「載入未封裝項目」，選擇 `extension` 資料夾。
 4. 允許 ChatGPT 網站存取，重新整理聊天頁面。
