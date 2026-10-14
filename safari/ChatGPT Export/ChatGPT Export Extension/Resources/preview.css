@@ -56,3 +56,8 @@ img { max-width: 100%; height: auto; }
 
 .export-rich-component { overflow-wrap:anywhere; }
 @media print { .export-rich-component { print-color-adjust:exact; -webkit-print-color-adjust:exact; } }
+
+.math[data-display="true"] { display:block; overflow-x:auto; break-inside:avoid; }
+.math .katex { white-space:normal; }
+.message-body hr { height:0 !important; padding:0 !important; border:0; border-top:1px solid #ddd; margin:1em 0; background:transparent; }
+@media print { .math[data-display="true"] { overflow:visible; } }

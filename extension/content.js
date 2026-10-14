@@ -269,6 +269,7 @@
 
   const allowed = new Set("p br div span h1 h2 h3 h4 h5 h6 ul ol li pre code blockquote strong em b i u s del hr table thead tbody tfoot tr th td a img sup sub details summary figure figcaption".split(" "));
   function componentStyle(node) {
+    if (node.localName === 'hr') return '';
     if (!node.hasAttribute('data-d-component')) return '';
     const computed = getComputedStyle(node);
     const properties = ['display','flex-direction','flex-wrap','align-items','align-self','justify-content','justify-items','gap','row-gap','column-gap','flex-grow','flex-shrink','flex-basis','grid-column','grid-row','grid-auto-flow','color','background-color','border-top','border-right','border-bottom','border-left','border-radius','padding-top','padding-right','padding-bottom','padding-left','margin-top','margin-right','margin-bottom','margin-left','font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-align','white-space'];
@@ -307,8 +308,10 @@
     if (["script", "style", "iframe", "button", "input", "textarea", "select", "form", "svg", "canvas"].includes(tag)) return "";
     if (node.classList.contains("katex")) {
       const tex = node.querySelector('annotation[encoding="application/x-tex"]')?.textContent;
-      return `<span class="math">${escapeHtml(redact(tex || node.getAttribute("aria-label") || node.innerText || "[公式]", terms))}</span>`;
+      const display = !!node.closest('.katex-display');
+      return `<span class="math" data-display="${display}" data-tex="${escapeHtml(redact(tex || node.getAttribute("aria-label") || node.innerText || "[公式]", terms))}">${escapeHtml(redact(tex || "[公式]", terms))}</span>`;
     }
+
     if (tag === "img") {
       const src = safeUrl(node.getAttribute("src"), "image");
       const alt = redact(node.getAttribute("alt") || "圖片", terms);

@@ -20,6 +20,10 @@ function safeLink(value) {
 function markdownInline(node) {
   if (node.nodeType === Node.TEXT_NODE) return node.textContent;
   if (node.nodeType !== Node.ELEMENT_NODE) return "";
+  if (node.matches('.math[data-tex]')) {
+    const tex=node.getAttribute('data-tex');
+    return node.getAttribute('data-display')==='true' ? `\n\n$$\n${tex}\n$$\n\n` : `$${tex}$`;
+  }
   const tag = node.localName;
   const children = [...node.childNodes].map(markdownInline).join("");
   if (["strong", "b"].includes(tag)) return `**${children}**`;
@@ -132,11 +136,22 @@ function render(payload) {
   const documentRoot = document.getElementById("document");
   documentRoot.classList.toggle("page-break", !!settings.pageBreak);
   documentRoot.innerHTML = `<div class="cover"><h1>${escapeHtml(settings.title || "ChatGPT 對話")}</h1><div class="meta">${metadata}</div></div>${toc}${messages}`;
+  let mathFailed = false;
+  for (const element of documentRoot.querySelectorAll('.math[data-tex]')) {
+    try {
+      katex.render(element.getAttribute('data-tex'), element, {displayMode:element.getAttribute('data-display')==='true',throwOnError:true,trust:false,strict:'ignore',maxExpand:1000});
+    } catch (error) {
+      mathFailed = true;
+      element.textContent = '公式渲染失敗：' + element.getAttribute('data-tex');
+    }
+  }
   const printButton = document.getElementById('print');
   printButton.disabled = true;
   Promise.all([...documentRoot.querySelectorAll('img')].map(img => img.decode())).then(async () => {
     await document.fonts.ready;
-    printButton.disabled = false;
+    printButton.disabled = mathFailed;
+    if (mathFailed) {const warning=document.createElement('p');warning.textContent='有公式無法渲染，已暫停列印，請檢查公式或回報此問題。';documentRoot.prepend(warning);}
+
   }).catch(() => {
     const warning = document.createElement('p');
     warning.textContent = '圖片未完整載入，已暫停列印。請回原對話重新擷取，避免產生缺圖 PDF。';
