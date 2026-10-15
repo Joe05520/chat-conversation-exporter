@@ -16,7 +16,7 @@ ChatGPT 對話選取與匯出工具：PDF、Markdown、JSON。繁體中文介面
 
 1. 從 [Releases](https://github.com/Joe05520/chat-conversation-exporter/releases) 下載 Chrome ZIP，解壓縮。
 2. 開啟 `chrome://extensions`，啟用開發人員模式。
-3. 按「載入未封裝項目」，選擇 `extension` 資料夾。
+3. 按「載入未封裝項目」，選擇解壓縮後直接包含 `manifest.json` 的資料夾（新版 Chrome ZIP 的最外層）。若下載的是 GitHub 原始碼 ZIP，則選其中的 `extension` 子資料夾。
 4. 允許 ChatGPT 網站存取，重新整理聊天頁面。
 5. 「列印／匯出」選取訊息；「全部」直接預覽。預覽頁可下載 MD / JSON 或列印儲存 PDF。
 6. ⚙ 可設定按鈕位置、背景色、文字色、背景透明度。
@@ -48,3 +48,7 @@ Chrome 本機回答 DOM 快照已驗證選取、圖解版面、快捷匯出12pt�
 ## v1.6.2 公式修正
 
 PDF 預覽內附 KaTeX 0.19.0（MIT）與字型，不依賴遠端 CDN。支援已擷取公式的分數、多行 aligned、上下標與 boxed；Markdown 保留 LaTeX 數學分隔符。渲染失敗時暫停列印，避免輸出未渲染原始碼。8個實際分享對話公式在本機擷取／預覽／PDF 測試通過，未驗證所有可能公式。
+
+### 安裝時顯示「資訊清單檔案遺失」
+
+表示選取的資料夾內沒有 manifest.json。新版 Chrome Release ZIP 已將 manifest.json 放在最外層；解壓縮後直接選該資料夾。舊包則需再進入 extension 子資料夾。不可直接選 ZIP 檔。
