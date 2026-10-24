@@ -63,11 +63,12 @@ function markdownBlock(node) {
 }
 
 function downloadMarkdown(payload) {
-  const { settings, turns, source, exportedAt } = payload;
+  const { settings, turns, source, exportedAt, warnings } = payload;
   const lines = [`# ${settings.title || "ChatGPT 對話"}`, ""];
   if (settings.author) lines.push(`作者：${settings.author}`, "");
   if (settings.showDate) lines.push(`匯出時間：${formatDate(exportedAt)}`, "");
   if (settings.showLink && safeLink(source)) lines.push(`對話連結：${source}`, "");
+  if (Array.isArray(warnings) && warnings.length) lines.push('> 圖片擷取提醒：'+warnings.join('；'), '');
   turns.forEach((turn, index) => {
     const container = document.createElement("div");
     container.innerHTML = turn.html || "";
@@ -91,6 +92,7 @@ function downloadJson(payload) {
     title: payload.settings.title || "ChatGPT 對話",
     source: safeLink(payload.source),
     exportedAt: payload.exportedAt,
+    warnings: Array.isArray(payload.warnings) ? payload.warnings : [],
     messages: payload.turns.map((turn) => ({
       role: turn.role === "assistant" ? "assistant" : "user",
       text: turn.text,
@@ -109,7 +111,7 @@ function downloadJson(payload) {
 }
 
 function render(payload) {
-  const { settings, turns, source, exportedAt } = payload || {};
+  const { settings, turns, source, exportedAt, warnings } = payload || {};
   if (!settings || !Array.isArray(turns) || !turns.length) throw new Error("預覽資料不完整");
   const paper = settings.paper === "Letter" ? "Letter" : "A4";
   const orientation = settings.orientation === "landscape" ? "landscape" : "portrait";
@@ -144,6 +146,11 @@ function render(payload) {
       mathFailed = true;
       element.textContent = '公式渲染失敗：' + element.getAttribute('data-tex');
     }
+  }
+  if (Array.isArray(warnings) && warnings.length) {
+    const summary=document.createElement('aside');summary.className='export-warnings';
+    summary.textContent='本次匯出有 '+warnings.length+' 張圖片未能擷取，已保留缺圖標記。'+warnings.join('；');
+    documentRoot.querySelector('.cover').after(summary);
   }
   const printButton = document.getElementById('print');
   printButton.disabled = true;

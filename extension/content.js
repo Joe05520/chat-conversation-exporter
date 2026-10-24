@@ -9,6 +9,7 @@
   let busy = false;
   let query = "";
   let assetMarkup = new Map();
+  let assetFailures = [];
   const preferenceKeys = ["paper", "orientation", "margin", "fontSize", "showDate", "showLink", "toc", "pageBreak"];
 
   const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
@@ -140,8 +141,9 @@
     const source = image.currentSrc || image.src;
     if (!source) throw new Error('有圖片尚未載入，請先讓圖片顯示後再匯出。');
     try {
-      const response = await fetch(source, { credentials: 'include' });
-      if (!response.ok) throw new Error('圖片讀取失敗');
+      const external = new URL(source, location.href).origin !== location.origin;
+      const response = await fetch(source, {credentials:external?'omit':'include',signal:AbortSignal.timeout(10000)});
+      if (!response.ok) throw new Error('圖片讀取失敗：HTTP '+response.status);
       const blob = await response.blob();
       if (!blob.type.startsWith('image/')) throw new Error('圖片格式不正確');
       return await new Promise((resolve, reject) => {
@@ -152,18 +154,21 @@
       });
     } catch (_) {
       try {
+        await Promise.race([image.decode(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('圖片載入逾時')),5000))]);
         const canvas = document.createElement('canvas');
         canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
         if (!canvas.width || !canvas.height) throw new Error();
         canvas.getContext('2d').drawImage(image, 0, 0);
         return canvas.toDataURL('image/png');
-      } catch (_) { throw new Error('有圖片無法完整擷取；請先確認原對話圖片已載入，再重新匯出。'); }
+      } catch (_) { throw new Error(image.naturalWidth ? '圖片可顯示，但來源可能限制跨來源讀取或畫布擷取' : '圖片尚未載入、網址無效或載入失敗'); }
     }
   }
 
-  async function prepareAssets(chosen, terms) {
+  async function prepareAssets(chosen, terms, skipFailed = false) {
     assetMarkup = new Map();
+    assetFailures = [];
     for (const turn of chosen) {
+      let mediaIndex = 0;
       for (const part of turn.parts || [turn.body]) {
         const media = [...part.querySelectorAll('img, svg, canvas')];
         for (const node of media) {
@@ -171,8 +176,18 @@
             const rect = node.getBoundingClientRect();
             if (((rect.width > 60 && rect.height > 40) || node.getAttribute('data-d-component') === 'icon') && !node.closest('button')) assetMarkup.set(node, svgSnapshot(node, terms));
           } else if (node.localName === 'img') {
-            const src = await embedImage(node);
-            assetMarkup.set(node, `<img src="${escapeHtml(src)}" alt="${escapeHtml(redact(node.alt || '圖片', terms))}">`);
+            mediaIndex++;
+            // UI-only / hidden images must not block exporting visible conversation content.
+            if (node.closest('[hidden], .sr-only') || getComputedStyle(node).display === 'none') {assetMarkup.set(node,'');continue;}
+            const label = `第 ${turns.indexOf(turn)+1} 則訊息，第 ${mediaIndex} 張圖片`;
+            try {
+              const src = await embedImage(node);
+              assetMarkup.set(node, `<img src="${escapeHtml(src)}" alt="${escapeHtml(redact(node.alt || '圖片', terms))}">`);
+            } catch (error) {
+              const alt = redact(node.alt || '未命名圖片',terms);
+              assetFailures.push(`${label}（${alt.slice(0,80)}）：${error.message}`);
+              assetMarkup.set(node, `<aside class="missing-image" role="note">[圖片未能擷取：${escapeHtml(label)} · ${escapeHtml(alt)}。此處已略過圖片，請參考原對話。]</aside>`);
+            }
           } else {
             try { assetMarkup.set(node, `<img src="${node.toDataURL('image/png')}" alt="圖表">`); }
             catch (_) { throw new Error('有 Canvas 圖表無法擷取，請先在原頁面確認圖表已載入。'); }
@@ -185,6 +200,7 @@
         }
       }
     }
+    if (assetFailures.length && !skipFailed) throw new Error('無法擷取 '+assetFailures.join('；')+'。可按「預覽並列印 PDF」重試，或勾選「略過失敗圖片」後匯出；略過處會保留明確標記。');
   }
 
   function renderList() {
@@ -320,6 +336,9 @@
     const children = [...node.childNodes].map((child) => cleanNode(child, terms)).join("");
     if (!allowed.has(tag)) return children;
     let attrs = componentStyle(node);
+    if (['div','figure','section','span'].includes(tag) && node.querySelector('table')) attrs = ' class="export-table-wrap"';
+    if (['table','thead','tbody','tfoot','tr','th','td'].includes(tag)) attrs = '';
+
     if (tag === "a") {
       const href = safeUrl(node.getAttribute("href"), "link");
       if (href && !terms.some((term) => href.includes(term))) attrs = ` href="${escapeHtml(href)}"`;
@@ -393,12 +412,13 @@
     try {
       const terms = redactionTerms();
       const chosen = turns.filter(turn => selected.has(turn.key));
-      await prepareAssets(chosen, terms);
+      await prepareAssets(chosen, terms, root.getElementById("skipFailedImages").checked);
       const chosenSettings = settings();
       chosenSettings.title = redact(chosenSettings.title, terms);
       chosenSettings.author = redact(chosenSettings.author, terms);
       const payload = {
         settings: chosenSettings,
+        warnings: assetFailures.map(label=>`未能擷取：${label}`),
         source: terms.some((term) => location.href.includes(term)) ? "" : location.href,
         exportedAt: new Date().toISOString(),
         turns: chosen.map((turn) => ({
@@ -407,7 +427,7 @@
       };
       const response = await chrome.runtime.sendMessage({ type: "CREATE_PREVIEW", payload });
       if (!response?.ok) throw new Error(response?.error || "無法建立預覽頁");
-      root.getElementById("status").textContent = "已開啟列印預覽分頁。";
+      root.getElementById("status").textContent = assetFailures.length ? `已開啟預覽；略過 ${assetFailures.length} 張失敗圖片，文件內已標記。` : "已開啟列印預覽分頁。";
     } catch (error) {
       root.getElementById("status").textContent = `匯出失敗：${error.message}`;
     } finally {
@@ -427,13 +447,13 @@
     const style = document.createElement("style");
     style.textContent = css;
     root.innerHTML = `<div class="panel" role="dialog" aria-label="ChatGPT 對話選取列印">
-      <header><div class="top"><h1>對話選取列印 · v1.6</h1><button class="icon" id="refresh" title="重新擷取訊息">↻</button><button class="icon" id="close" title="關閉">×</button></div>
+      <header><div class="top"><h1>對話選取列印 · v1.6.3</h1><button class="icon" id="refresh" title="重新擷取訊息">↻</button><button class="icon" id="close" title="關閉">×</button></div>
       <p class="hint">選取訊息後匯出；已顯示的圖片和流程圖會一起保留。長對話請捲動載入後按 ↻。</p></header>
       <div class="tools"><button data-select="all">全選</button><button data-select="user">只選提問</button><button data-select="assistant">只選回答</button><button data-select="none">清空</button><button data-select="invert">反選</button></div>
       <div class="search"><input type="text" id="search" placeholder="搜尋訊息內容" aria-label="搜尋訊息內容"><div class="search-actions"><span id="matches"></span><button data-select="matches">加入結果</button><button data-select="clearMatches">取消結果</button></div></div>
       <div class="range"><label>從第<input type="number" id="rangeStart" min="1" value="1"></label><label>到第<input type="number" id="rangeEnd" min="1" value="1"></label><button id="rangeSelect">加入範圍</button></div>
       <div class="list" id="list"></div>
-      <footer><details><summary>PDF 設定</summary><div class="grid">
+      <footer><label style="display:block;margin:6px 0;font-size:12px"><input type="checkbox" id="skipFailedImages">略過失敗圖片（文件中保留缺圖標記）</label><details><summary>PDF 設定</summary><div class="grid">
         <label class="field wide">文件標題<input type="text" id="title"></label>
         <label class="field wide">作者名稱（選填）<input type="text" id="author" placeholder="留空不顯示"></label>
         <label class="field">紙張<select id="paper"><option>A4</option><option>Letter</option></select></label>
