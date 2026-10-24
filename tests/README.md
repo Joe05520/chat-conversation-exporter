@@ -10,3 +10,5 @@
 4. JSON 應有 warnings，Markdown 應有提醒與標記。
 
 使用合成資料，沒有私人對話或附件。
+
+背景圖片來源、請求選項、回應格式與大小限制可執行 `node tests/background-image.cjs` 驗證。

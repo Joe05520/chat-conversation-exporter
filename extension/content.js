@@ -137,9 +137,37 @@
     return new XMLSerializer().serializeToString(copy);
   }
 
+  function embeddedSvgSnapshot(source, terms, alt, displayWidth) {
+    const comma = source.indexOf(',');
+    const svgText = /;base64/i.test(source.slice(0,comma))
+      ? new TextDecoder().decode(Uint8Array.from(atob(source.slice(comma+1)),c=>c.charCodeAt(0)))
+      : decodeURIComponent(source.slice(comma+1));
+    const doc = new DOMParser().parseFromString(svgText,'image/svg+xml');
+    if (doc.querySelector('parsererror') || doc.documentElement.localName!=='svg') throw new Error('SVG 格式無效');
+    const svg = doc.documentElement;
+    const allowedSvg = new Set('svg g path rect line polyline polygon circle ellipse text tspan defs marker clipPath mask linearGradient radialGradient stop title desc use'.split(' '));
+    for (const node of [svg,...svg.querySelectorAll('*')]) {
+      if (!allowedSvg.has(node.localName)) {node.remove();continue;}
+      for (const attribute of [...node.attributes]) {
+        const localReference = node.localName==='use' && ['href','xlink:href'].includes(attribute.name) && /^#[A-Za-z0-9_.:-]+$/.test(attribute.value);
+        if (/^on/i.test(attribute.name) || (!localReference && ['href','xlink:href','src'].includes(attribute.name)) || /(?:javascript:|expression\(|@import|url\((?!["']?#))/i.test(attribute.value)) node.removeAttribute(attribute.name);
+      }
+    }
+    const walker=doc.createTreeWalker(svg,NodeFilter.SHOW_TEXT);
+    while(walker.nextNode())walker.currentNode.textContent=redact(walker.currentNode.textContent,terms);
+    svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    svg.setAttribute('class','export-diagram');
+    svg.setAttribute('role','img');svg.setAttribute('aria-label',redact(alt||'向量圖表',terms));
+    const vb=svg.viewBox.baseVal;
+    if (vb.width>0 && vb.height>0) {const width=Math.max(vb.width,Math.min(2000,displayWidth||0));svg.setAttribute('width',String(width));svg.setAttribute('height',String(width*vb.height/vb.width));}
+    svg.style.maxWidth='100%';svg.style.height='auto';svg.style.display='block';
+    return new XMLSerializer().serializeToString(svg);
+  }
+
   async function embedImage(image) {
     const source = image.currentSrc || image.src;
     if (!source) throw new Error('有圖片尚未載入，請先讓圖片顯示後再匯出。');
+    if (/^data:image\/svg\+xml[;,]/i.test(source)) return source;
     try {
       const external = new URL(source, location.href).origin !== location.origin;
       const response = await fetch(source, {credentials:external?'omit':'include',signal:AbortSignal.timeout(10000)});
@@ -153,6 +181,12 @@
         reader.readAsDataURL(blob);
       });
     } catch (_) {
+      if (/^https:\/\/images\.openai\.com\//i.test(source)) {
+        try {
+          const result = await chrome.runtime.sendMessage({type:'READ_CHATGPT_IMAGE',url:source});
+          if (result?.ok && /^data:image\//.test(result.data)) return result.data;
+        } catch (_) {}
+      }
       try {
         await Promise.race([image.decode(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('圖片載入逾時')),5000))]);
         const canvas = document.createElement('canvas');
@@ -182,7 +216,7 @@
             const label = `第 ${turns.indexOf(turn)+1} 則訊息，第 ${mediaIndex} 張圖片`;
             try {
               const src = await embedImage(node);
-              assetMarkup.set(node, `<img src="${escapeHtml(src)}" alt="${escapeHtml(redact(node.alt || '圖片', terms))}">`);
+              assetMarkup.set(node, /^data:image\/svg\+xml[;,]/i.test(src) ? embeddedSvgSnapshot(src,terms,node.alt,node.getBoundingClientRect().width) : `<img src="${escapeHtml(src)}" alt="${escapeHtml(redact(node.alt || '圖片', terms))}">`);
             } catch (error) {
               const alt = redact(node.alt || '未命名圖片',terms);
               assetFailures.push(`${label}（${alt.slice(0,80)}）：${error.message}`);
@@ -447,7 +481,7 @@
     const style = document.createElement("style");
     style.textContent = css;
     root.innerHTML = `<div class="panel" role="dialog" aria-label="ChatGPT 對話選取列印">
-      <header><div class="top"><h1>對話選取列印 · v1.6.3</h1><button class="icon" id="refresh" title="重新擷取訊息">↻</button><button class="icon" id="close" title="關閉">×</button></div>
+      <header><div class="top"><h1>對話選取列印 · v1.6.4</h1><button class="icon" id="refresh" title="重新擷取訊息">↻</button><button class="icon" id="close" title="關閉">×</button></div>
       <p class="hint">選取訊息後匯出；已顯示的圖片和流程圖會一起保留。長對話請捲動載入後按 ↻。</p></header>
       <div class="tools"><button data-select="all">全選</button><button data-select="user">只選提問</button><button data-select="assistant">只選回答</button><button data-select="none">清空</button><button data-select="invert">反選</button></div>
       <div class="search"><input type="text" id="search" placeholder="搜尋訊息內容" aria-label="搜尋訊息內容"><div class="search-actions"><span id="matches"></span><button data-select="matches">加入結果</button><button data-select="clearMatches">取消結果</button></div></div>

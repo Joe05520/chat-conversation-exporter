@@ -71,3 +71,8 @@ img { max-width: 100%; height: auto; }
 .meta, .meta a { overflow-wrap:anywhere; word-break:break-word; }
 .missing-image, .export-warnings { display:block; border:1px dashed #b96b24; background:#fff7e9; color:#754315; padding:10px; margin:10px 0; font-size:.8em; overflow-wrap:anywhere; }
 @media print { .message-body table { break-inside:auto; } .message-body thead { display:table-header-group; } .message-body tr { break-inside:avoid; } #chatgpt-pdf-launcher { display:none !important; } }
+
+/* Conversation-style tables: horizontal row rules only. */
+.message-body table { border:0 !important; border-collapse:collapse; }
+.message-body th, .message-body td { border:0 !important; border-bottom:1px solid #e8e8eb !important; background:transparent !important; padding:8px 10px; }
+.message-body th { font-weight:650; }
