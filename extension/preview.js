@@ -118,6 +118,7 @@ function render(payload) {
   const margin = { compact: "10mm", normal: "17mm", wide: "24mm" }[settings.margin] || "17mm";
   const fontSize = [12, 14, 16, 18].includes(settings.fontSize) ? settings.fontSize : 14;
   const printStyle = document.createElement("style");
+  printStyle.setAttribute("data-export-style", "");
   printStyle.textContent = `@page { size: ${paper} ${orientation}; margin: ${margin}; }`;
   document.head.append(printStyle);
   document.documentElement.style.setProperty("--body-size", `${fontSize}pt`);
@@ -178,6 +179,13 @@ document.getElementById("print").addEventListener("click", () => window.print())
     render(stored[key]);
     document.getElementById("markdown").addEventListener("click", () => downloadMarkdown(stored[key]));
     document.getElementById("json").addEventListener("click", () => downloadJson(stored[key]));
+    const extraExport=document.getElementById('export-file');
+    if(extraExport) extraExport.addEventListener('click',async()=>{
+      extraExport.disabled=true;
+      try { await ConversationFormats.exportFile(document.getElementById('file-format').value,document.getElementById('document'),stored[key].settings.title||'ChatGPT conversation',{fontSize:stored[key].settings.fontSize}); }
+      catch(error){ const notice=document.createElement('p');notice.setAttribute('role','alert');notice.style.color='#a03746';notice.textContent='匯出失敗：'+error.message;document.getElementById('document').prepend(notice); }
+      finally {extraExport.disabled=false;}
+    });
     await chrome.storage.session.remove(key);
   } catch (error) {
     document.getElementById("document").textContent = `無法載入預覽：${error.message}`;

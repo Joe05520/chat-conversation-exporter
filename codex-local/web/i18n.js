@@ -13,6 +13,9 @@ ko:['Codex 대화 내보내기','로컬 기록 · PDF / Markdown / JSON','로컬
 for(const [lang,values] of Object.entries(uiValues))if(values.length!==uiKeys.length)throw Error('Incomplete locale: '+lang);
 const ui=Object.fromEntries(uiKeys.map((key,i)=>[key,uiValues[codexLanguage][i]]));
 function t(key,values={}){return (ui[key]||key).replace(/\{(\w+)\}/g,(_,k)=>values[k]??'');}
+ui.downloadFile={'zh-Hant':'下載檔案','zh-Hans':'下载文件',en:'Download file',ja:'ファイルを保存',ko:'파일 다운로드'}[codexLanguage];
+ui.preparing={'zh-Hant':'正在準備匯出檔案…','zh-Hans':'正在准备导出文件…',en:'Preparing export…',ja:'ファイルを準備中…',ko:'파일 준비 중…'}[codexLanguage];
+ui.saved={'zh-Hant':'匯出檔案已下載。','zh-Hans':'导出文件已下载。',en:'Export file downloaded.',ja:'ファイルを保存しました。',ko:'파일을 다운로드했습니다.'}[codexLanguage];
 document.documentElement.lang=codexLanguage;document.title=t('app');
 for(const el of document.querySelectorAll('[data-i18n]'))el.textContent=t(el.dataset.i18n);
 for(const el of document.querySelectorAll('[data-i18n-placeholder]'))el.placeholder=t(el.dataset.i18nPlaceholder);

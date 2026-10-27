@@ -3,3 +3,5 @@
 .session{min-width:0;width:100%;overflow:hidden;overflow-wrap:anywhere}.message-head{flex-direction:row}.toolbar>div{min-width:0}.toolbar strong{overflow-wrap:anywhere}.actions{flex-shrink:0}
 
 .language-label{font-size:11px;margin:16px 0 0}#language{width:100%;font-size:12px}html:lang(ko) .body{word-break:keep-all}
+
+.body pre,.body pre code{white-space:pre-wrap;tab-size:4}.body pre code{display:block}

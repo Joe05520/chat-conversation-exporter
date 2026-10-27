@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ChatGPT 對話選取列印",
-  "version": "1.6.4",
-  "description": "搜尋與選取 ChatGPT 訊息、遮蔽敏感文字，並列印 PDF 或下載 Markdown、JSON。",
+  "version": "1.7.0",
+  "description": "搜尋與選取 ChatGPT 訊息、遮蔽敏感文字，並列印 PDF 或下載 Markdown、JSON、HTML、TXT、DOCX。",
   "permissions": [
     "activeTab",
     "scripting",

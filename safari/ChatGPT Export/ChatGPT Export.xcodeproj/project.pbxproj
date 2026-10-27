@@ -24,6 +24,9 @@
 		B3299C9A3077EB260056B2D8 /* preview.js in Resources */ = {isa = PBXBuildFile; fileRef = B3299C933077EB260056B2D8 /* preview.js */; };
 		B3299C9B3077EB260056B2D8 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B3299C943077EB260056B2D8 /* manifest.json */; };
 		B3299C9C3077EB260056B2D8 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = B3299C953077EB260056B2D8 /* content.js */; };
+		047E1213526D4BE5B5C42016 /* export-formats.js in Resources */ = {isa = PBXBuildFile; fileRef = 15BFE1BFD5A2435BAD33D641 /* export-formats.js */; };
+		FC748E220A2C403C850009E8 /* vendor in Resources */ = {isa = PBXBuildFile; fileRef = 4B51552C8FC941209791D397 /* vendor */; };
+		F3A42B179F1E4D30A23F96DF /* icons in Resources */ = {isa = PBXBuildFile; fileRef = C3197C3F15D2430295989799 /* icons */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +72,9 @@
 		B3299C933077EB260056B2D8 /* preview.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = preview.js; path = Resources/preview.js; sourceTree = "<group>"; };
 		B3299C943077EB260056B2D8 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = Resources/manifest.json; sourceTree = "<group>"; };
 		B3299C953077EB260056B2D8 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.js; path = Resources/content.js; sourceTree = "<group>"; };
+		15BFE1BFD5A2435BAD33D641 /* export-formats.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = export-formats.js; path = Resources/export-formats.js; sourceTree = "<group>"; };
+		4B51552C8FC941209791D397 /* vendor */ = {isa = PBXFileReference; lastKnownFileType = folder; name = vendor; path = Resources/vendor; sourceTree = "<group>"; };
+		C3197C3F15D2430295989799 /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = Resources/icons; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +146,9 @@
 		B3299C8E3077EB260056B2D8 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C3197C3F15D2430295989799 /* icons */,
+				4B51552C8FC941209791D397 /* vendor */,
+				15BFE1BFD5A2435BAD33D641 /* export-formats.js */,
 				B3299C8F3077EB260056B2D8 /* preview.html */,
 				B3299C903077EB260056B2D8 /* background.js */,
 				B3299C913077EB260056B2D8 /* 使用說明.md */,
@@ -242,6 +251,9 @@
 		B3299C7B3077EB260056B2D8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				F3A42B179F1E4D30A23F96DF /* icons in Resources */,
+				FC748E220A2C403C850009E8 /* vendor in Resources */,
+				047E1213526D4BE5B5C42016 /* export-formats.js in Resources */,
 				B3299C993077EB260056B2D8 /* preview.css in Resources */,
 				B3299C983077EB260056B2D8 /* 使用說明.md in Resources */,
 				B3299C9A3077EB260056B2D8 /* preview.js in Resources */,
@@ -433,7 +445,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.7.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -467,7 +479,7 @@
 					"@executable_path/../../../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.7.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -506,7 +518,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.7.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -548,7 +560,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.7.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,

@@ -347,6 +347,18 @@
     return ` class="export-rich-component" style="${escapeHtml(style.cssText)}"`;
   }
 
+  // textContent joins CSS line wrappers and ignores <br>. Read code as displayed,
+  // while retaining raw newlines when the source already stores them.
+  function codeText(code) {
+    const lineNodes = [...code.children].filter(el => el.matches('.line, [data-line]'));
+    if (lineNodes.length && lineNodes.length === code.children.length) {
+      return lineNodes.map(el => (el.innerText || el.textContent || '').replace(/\r\n?/g, '\n').replace(/\n$/, '')).join('\n');
+    }
+    const raw = (code.textContent || '').replace(/\r\n?/g, '\n');
+    const visible = (code.innerText || '').replace(/\r\n?/g, '\n');
+    return visible.includes('\n') || code.querySelector('br') ? visible : raw;
+  }
+
   function cleanNode(node, terms) {
     if (node.nodeType === Node.TEXT_NODE) return escapeHtml(redact(node.textContent, terms));
     if (node.nodeType !== Node.ELEMENT_NODE) return "";
@@ -354,7 +366,7 @@
     if (assetMarkup.has(node)) return assetMarkup.get(node);
     if (node.classList.contains('sr-only') || node.hidden || getComputedStyle(node).display === 'none') return '';
     if (tag === 'button') return [...node.querySelectorAll('img, canvas')].map(media => assetMarkup.get(media) || '').join('');
-    if (tag === 'pre' && node.querySelector('code')) return `<pre><code>${escapeHtml(redact(node.querySelector('code').textContent, terms))}</code></pre>`;
+    if (tag === 'pre' && node.querySelector('code')) return `<pre><code>${escapeHtml(redact(codeText(node.querySelector('code')), terms))}</code></pre>`;
     if (["script", "style", "iframe", "button", "input", "textarea", "select", "form", "svg", "canvas"].includes(tag)) return "";
     if (node.classList.contains("katex")) {
       const tex = node.querySelector('annotation[encoding="application/x-tex"]')?.textContent;
@@ -481,7 +493,7 @@
     const style = document.createElement("style");
     style.textContent = css;
     root.innerHTML = `<div class="panel" role="dialog" aria-label="ChatGPT 對話選取列印">
-      <header><div class="top"><h1>對話選取列印 · v1.6.4</h1><button class="icon" id="refresh" title="重新擷取訊息">↻</button><button class="icon" id="close" title="關閉">×</button></div>
+      <header><div class="top"><h1>對話選取列印 · v1.7.0</h1><button class="icon" id="refresh" title="重新擷取訊息">↻</button><button class="icon" id="close" title="關閉">×</button></div>
       <p class="hint">選取訊息後匯出；已顯示的圖片和流程圖會一起保留。長對話請捲動載入後按 ↻。</p></header>
       <div class="tools"><button data-select="all">全選</button><button data-select="user">只選提問</button><button data-select="assistant">只選回答</button><button data-select="none">清空</button><button data-select="invert">反選</button></div>
       <div class="search"><input type="text" id="search" placeholder="搜尋訊息內容" aria-label="搜尋訊息內容"><div class="search-actions"><span id="matches"></span><button data-select="matches">加入結果</button><button data-select="clearMatches">取消結果</button></div></div>

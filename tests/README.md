@@ -12,3 +12,9 @@
 使用合成資料，沒有私人對話或附件。
 
 背景圖片來源、請求選項、回應格式與大小限制可執行 `node tests/background-image.cjs` 驗證。
+
+## Additional formats and ASM line preservation
+
+Serve the repository locally, open `tests/export-formats.html?id=test`, then click 擷取程式碼範例. This runs the real content extraction and preview code against a synthetic conversation. It covers CSS line wrappers, a blank line, indentation, `br` separators, raw text newlines, tabs, a fraction, a radical, a table and an inline SVG.
+
+Download HTML, TXT and DOCX using the format selector. Place copies named `ASM-export.html`, `ASM-export.txt`, `ASM-export.docx` in a local QA folder. Run `python3 tests/export-artifact-check.py /absolute/path/to/qa-folder`. Open the standalone HTML and render the DOCX to inspect actual pages. Keep font configuration local to QA when a headless office renderer cannot discover installed CJK fonts.

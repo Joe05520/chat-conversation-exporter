@@ -2,26 +2,28 @@
 
 <img src="assets/icon-128.png" width="96" alt="Codex / ChatGPT Conversation Exporter icon">
 
-**Print Codex conversations to PDF. Export Codex and ChatGPT conversations as Markdown or JSON.**
+**Print Codex conversations to PDF. Export Codex and ChatGPT conversations as Markdown, JSON, HTML, TXT, or DOCX.**
 
 **Open source · Free · No ads.** / **開放原始碼 · 免費 · 無廣告。**
 
-**列印 Codex 對話為 PDF，並匯出 Markdown／JSON。** 同時提供 ChatGPT 網頁對話的 Chrome／Safari 匯出工具。非 OpenAI 官方產品。
+**列印 Codex 對話為 PDF，並匯出 Markdown／JSON／HTML／TXT／DOCX。** 同時提供 ChatGPT 網頁對話的 Chrome／Safari 匯出工具。非 OpenAI 官方產品。
 
 ## 選擇你要匯出的對話
 
 | 對話來源 | 使用工具 | 匯出格式 |
 | --- | --- | --- |
-| **Codex 桌面版（macOS）** | **[Codex 本機對話匯出工具](codex-local/使用說明.md)**：直接讀取本機記錄，選對話、選訊息後列印 | PDF、Markdown、JSON |
-| ChatGPT 網頁版 | [Chrome 擴充功能](#chrome-安裝)／[Safari 開發測試版](#safari本機開發測試版) | PDF、Markdown、JSON |
+| **Codex 桌面版（macOS）** | **[Codex 本機對話匯出工具](codex-local/使用說明.md)**：直接讀取本機記錄，選對話、選訊息後列印 | PDF、Markdown、JSON、HTML、TXT、DOCX |
+| ChatGPT 網頁版 | [Chrome 擴充功能](#chrome-安裝)／[Safari 開發測試版](#safari本機開發測試版) | PDF、Markdown、JSON、HTML、TXT、DOCX |
+
+**[免費下載網站 · Free downloads](https://codex-chatgpt-conversation-exporter.peeyangpt.chatgpt.site)** — 繁體中文、简体中文、English、日本語、한국어。
 
 ## 列印 Codex 對話：快速開始
 
-**[下載 Codex macOS 工具 ZIP](https://github.com/Joe05520/codex-chatgpt-conversation-exporter/releases/download/codex-v0.1.1/codex-conversation-exporter-macos-v0.1.1.zip)** · [Codex 使用說明](codex-local/使用說明.md)
+**[下載 Codex macOS 工具 ZIP](https://github.com/Joe05520/codex-chatgpt-conversation-exporter/releases/download/codex-v0.2.0/codex-conversation-exporter-macos-v0.2.0.zip)** · [Codex 使用說明](codex-local/使用說明.md)
 
 1. 解壓縮後，雙擊 **「啟動 Codex 對話列印.command」**。需先安裝 **Python 3.9+**，無須 pip 安裝。
 2. 在自動開啟的本機瀏覽器頁面選擇 Codex 對話，再勾選需要的訊息。
-3. 按 **「列印／另存 PDF」**，或按「下載 Markdown」「下載 JSON」。PDF 預設 A4、12 pt。
+3. 按 **「列印／另存 PDF」**，或按「下載 Markdown」「下載 JSON」；HTML／TXT／DOCX 從格式選單選擇後按「下載檔案」。PDF 預設 A4、12 pt。
 
 Codex export reads local conversation history on your Mac. No public share link, cloud upload, inference API, or browser extension is required. The offline renderer supports Markdown, KaTeX equations and Mermaid diagrams. Missing or unreadable local images are marked explicitly; the tool cannot restore content that is absent from the local record.
 
@@ -43,7 +45,7 @@ Codex 版本支援訊息選取、只選回答、選擇是否包含工作進度�
 2. 開啟 `chrome://extensions`，啟用開發人員模式。
 3. 按「載入未封裝項目」，選擇解壓縮後直接包含 `manifest.json` 的資料夾（新版 Chrome ZIP 的最外層）。若下載的是 GitHub 原始碼 ZIP，則選其中的 `extension` 子資料夾。
 4. 允許 ChatGPT 網站存取，重新整理聊天頁面。
-5. 「列印／匯出」選取訊息；「全部」直接預覽。預覽頁可下載 MD / JSON 或列印儲存 PDF。
+5. 「列印／匯出」選取訊息；「全部」直接預覽。預覽頁可下載 MD / JSON，或從格式選單下載 HTML／TXT／DOCX，也可列印儲存 PDF。
 6. ⚙ 可設定按鈕位置、背景色、文字色、背景透明度。
 
 更新：用新版 extension 資料夾替換舊內容，再到擴充功能頁重新載入並重新整理 ChatGPT。
@@ -97,3 +99,9 @@ PDF 預覽內附 KaTeX 0.19.0（MIT）與字型，不依賴遠端 CDN。支援�
 實際對話測試：6則、46表格、198公式、1張原始PNG與1個inline SVG，缺圖0。背景讀取函式在Node環境實際取得原圖後，將回傳資料接入瀏覽器擷取測試；不是更新後擴充功能的權限核准／安裝全流程測試。Safari網站匯出未實測。
 
 安全閘門測試：`node tests/background-image.cjs`。
+
+## v1.7 / Codex v0.2 新增格式與程式碼修正
+
+新增 HTML、TXT、DOCX：從預覽頁格式選單選擇，再按「下載檔案」。HTML 內嵌排版資源供離線閱讀；TXT 保留程式碼分行；DOCX 以可編輯段落、表格及支援的 Word 數學式輸出，流程圖保留 SVG 與相容 PNG。對複雜自訂版面、無法轉換的 MathML 或互動圖解，不保證 DOCX 與網頁完全相同；不支援的數學結構會報錯，請改用 PDF／HTML。
+
+修正 ChatGPT 程式碼每行以 span／data-line 或 br 呈現時，被 textContent 合併成一行的問題。ASM 測試含縮排、空白行、註解、br 及原始換行。新格式沒有廣告、遙測或遠端轉檔服務。docx 9.6.1 採 MIT 授權，離線資源隨工具提供。

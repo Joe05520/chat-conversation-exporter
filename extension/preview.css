@@ -76,3 +76,5 @@ img { max-width: 100%; height: auto; }
 .message-body table { border:0 !important; border-collapse:collapse; }
 .message-body th, .message-body td { border:0 !important; border-bottom:1px solid #e8e8eb !important; background:transparent !important; padding:8px 10px; }
 .message-body th { font-weight:650; }
+
+pre,pre code{white-space:pre-wrap;tab-size:4}pre code{display:block}.toolbar select{font:inherit;padding:8px;border-radius:8px;border:1px solid #78668a;background:#fff;color:#25242b}

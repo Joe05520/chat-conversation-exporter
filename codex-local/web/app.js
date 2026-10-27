@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const token = new URLSearchParams(location.hash.slice(1)).get('token');
 let sessions = [], chat = null, selected = new Set(), rendering = false, errors = 0;
 const md = window.markdownit({html:false,linkify:true,breaks:false});
-mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'neutral',flowchart:{htmlLabels:false},suppressErrorRendering:true});
+mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:'neutral',htmlLabels:false,flowchart:{htmlLabels:false},suppressErrorRendering:true});
 function mathRule(state, silent) {
   const src = state.src.slice(state.pos);
   let open, close, display = false;
@@ -41,7 +41,7 @@ function visible(){return chat ? chat.messages.filter(m=>$('progress').checked |
 function picked(){return visible().filter(m=>selected.has(m.id));}
 function update(){
   $('count').textContent=t('selected',{n:picked().length,total:visible().length});
-  ['md','json'].forEach(id=>$(id).disabled=!picked().length || rendering);
+  ['md','json','export-file'].forEach(id=>$(id).disabled=!picked().length || rendering);
   $('print').disabled=!picked().length || rendering;
   document.querySelectorAll('.message').forEach(el=>el.classList.toggle('excluded',!selected.has(Number(el.dataset.id))));
 }
@@ -95,6 +95,7 @@ $('print').onclick=async()=>{
   if(broken && !$('allow-missing').checked){say(t('missingBlocked'));return;}
   await document.fonts.ready;head();window.print();
 };
+$('export-file').onclick=async()=>{say(t('preparing'));$('export-file').disabled=true;try{await ConversationFormats.exportFile($('file-format').value,$('document'),$('title').value||chat.title,{fontSize:Number($('font').value)});say(t('saved'));}catch(error){say(error.message);}finally{update();}};
 $('all').onclick=()=>{visible().forEach(m=>selected.add(m.id));document.querySelectorAll('.message input').forEach(c=>c.checked=true);update();};
 $('none').onclick=()=>{selected.clear();document.querySelectorAll('.message input').forEach(c=>c.checked=false);update();};
 $('answers').onclick=()=>{selected=new Set(visible().filter(m=>m.role==='assistant').map(m=>m.id));document.querySelectorAll('.message').forEach(el=>el.querySelector('input').checked=selected.has(Number(el.dataset.id)));update();};

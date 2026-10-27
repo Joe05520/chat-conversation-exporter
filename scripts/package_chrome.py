@@ -14,7 +14,7 @@ with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
 with zipfile.ZipFile(output) as archive:
     assert archive.testzip() is None
     assert json.loads(archive.read('manifest.json'))['version']==manifest['version']
-    required=[manifest['background']['service_worker'],*manifest['icons'].values(),'preview.html','preview.js','preview.css','vendor/katex/katex.min.js','vendor/katex/katex.min.css']
+    required=[manifest['background']['service_worker'],*manifest['icons'].values(),'preview.html','preview.js','preview.css','export-formats.js','vendor/docx.js','vendor/katex/katex.min.js','vendor/katex/katex.min.css']
     for script in manifest['content_scripts']:required.extend(script['js'])
     for name in required:assert name in archive.namelist(),name
     for path in ext.rglob('*'):
