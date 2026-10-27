@@ -95,7 +95,7 @@ function downloadJson(payload) {
     warnings: Array.isArray(payload.warnings) ? payload.warnings : [],
     messages: payload.turns.map((turn) => ({
       role: turn.role === "assistant" ? "assistant" : "user",
-      text: turn.text,
+      text: (() => {const container=document.createElement('div');container.innerHTML=turn.html||'';return window.ConversationFormats ? ConversationFormats.plainText(container).trim() : turn.text;})(),
       ...(turn.time ? { createdAt: turn.time } : {})
     }))
   };

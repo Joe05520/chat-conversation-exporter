@@ -1,6 +1,6 @@
 """Validate artifacts downloaded from tests/export-formats.html (synthetic data only)."""
 from pathlib import Path
-import argparse,zipfile,xml.etree.ElementTree as E
+import argparse,zipfile,json,xml.etree.ElementTree as E
 from html.parser import HTMLParser
 p=argparse.ArgumentParser();p.add_argument('directory',type=Path);args=p.parse_args()
 root=args.directory
@@ -25,3 +25,8 @@ with zipfile.ZipFile(root/'ASM-export.docx') as z:
     assert any(x.endswith('.svg') for x in z.namelist())
     assert any(x.endswith('.png') for x in z.namelist())
 print('PASS: exact ASM lines, no active HTML, DOCX equations/tables/SVG/PNG and ZIP CRC')
+
+if (root/'ASM-export.json').exists():
+    data=json.loads((root/'ASM-export.json').read_text())
+    assert asm in data['messages'][0]['text']
+    print('PASS: JSON preserves the blank ASM line and indentation')
