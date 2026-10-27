@@ -4,6 +4,8 @@
 
 **Print Codex conversations to PDF. Export Codex and ChatGPT conversations as Markdown or JSON.**
 
+**Open source · Free · No ads.** / **開放原始碼 · 免費 · 無廣告。**
+
 **列印 Codex 對話為 PDF，並匯出 Markdown／JSON。** 同時提供 ChatGPT 網頁對話的 Chrome／Safari 匯出工具。非 OpenAI 官方產品。
 
 ## 選擇你要匯出的對話
@@ -15,13 +17,15 @@
 
 ## 列印 Codex 對話：快速開始
 
-**[下載 Codex macOS 工具 ZIP](https://github.com/Joe05520/codex-chatgpt-conversation-exporter/releases/download/codex-v0.1.0/codex-conversation-exporter-macos-v0.1.0.zip)** · [Codex 使用說明](codex-local/使用說明.md)
+**[下載 Codex macOS 工具 ZIP](https://github.com/Joe05520/codex-chatgpt-conversation-exporter/releases/download/codex-v0.1.1/codex-conversation-exporter-macos-v0.1.1.zip)** · [Codex 使用說明](codex-local/使用說明.md)
 
 1. 解壓縮後，雙擊 **「啟動 Codex 對話列印.command」**。需先安裝 **Python 3.9+**，無須 pip 安裝。
 2. 在自動開啟的本機瀏覽器頁面選擇 Codex 對話，再勾選需要的訊息。
 3. 按 **「列印／另存 PDF」**，或按「下載 Markdown」「下載 JSON」。PDF 預設 A4、12 pt。
 
 Codex export reads local conversation history on your Mac. No public share link, cloud upload, inference API, or browser extension is required. The offline renderer supports Markdown, KaTeX equations and Mermaid diagrams. Missing or unreadable local images are marked explicitly; the tool cannot restore content that is absent from the local record.
+
+Codex 工具介面可切換繁體中文、簡體中文、英文、日文、韓文，對話原文不會自動翻譯。
 
 Codex 版本支援訊息選取、只選回答、選擇是否包含工作進度，以及公式、Mermaid 與淡橫線表格。僅讀取本機有記錄的對話；無法讀取的圖片有明確警示與逾時處理。[完整支援範圍與限制](codex-local/使用說明.md#排版與限制)
 
