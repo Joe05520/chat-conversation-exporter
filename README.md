@@ -1,10 +1,31 @@
-# Chat Conversation Exporter
+# Codex / ChatGPT Conversation Exporter
 
-<img src="assets/icon-128.png" width="96" alt="Chat Conversation Exporter icon">
+<img src="assets/icon-128.png" width="96" alt="Codex / ChatGPT Conversation Exporter icon">
 
-ChatGPT 對話選取與匯出工具：PDF、Markdown、JSON。繁體中文介面，Chrome / Safari Web Extension 原始碼。非 OpenAI 官方產品。
+**Print Codex conversations to PDF. Export Codex and ChatGPT conversations as Markdown or JSON.**
 
-## 功能
+**列印 Codex 對話為 PDF，並匯出 Markdown／JSON。** 同時提供 ChatGPT 網頁對話的 Chrome／Safari 匯出工具。非 OpenAI 官方產品。
+
+## 選擇你要匯出的對話
+
+| 對話來源 | 使用工具 | 匯出格式 |
+| --- | --- | --- |
+| **Codex 桌面版（macOS）** | **[Codex 本機對話匯出工具](codex-local/使用說明.md)**：直接讀取本機記錄，選對話、選訊息後列印 | PDF、Markdown、JSON |
+| ChatGPT 網頁版 | [Chrome 擴充功能](#chrome-安裝)／[Safari 開發測試版](#safari本機開發測試版) | PDF、Markdown、JSON |
+
+## 列印 Codex 對話：快速開始
+
+**[下載 Codex macOS 工具 ZIP](https://github.com/Joe05520/codex-chatgpt-conversation-exporter/releases/download/codex-v0.1.0/codex-conversation-exporter-macos-v0.1.0.zip)** · [Codex 使用說明](codex-local/使用說明.md)
+
+1. 解壓縮後，雙擊 **「啟動 Codex 對話列印.command」**。需先安裝 **Python 3.9+**，無須 pip 安裝。
+2. 在自動開啟的本機瀏覽器頁面選擇 Codex 對話，再勾選需要的訊息。
+3. 按 **「列印／另存 PDF」**，或按「下載 Markdown」「下載 JSON」。PDF 預設 A4、12 pt。
+
+Codex export reads local conversation history on your Mac. No public share link, cloud upload, inference API, or browser extension is required. The offline renderer supports Markdown, KaTeX equations and Mermaid diagrams. Missing or unreadable local images are marked explicitly; the tool cannot restore content that is absent from the local record.
+
+Codex 版本支援訊息選取、只選回答、選擇是否包含工作進度，以及公式、Mermaid 與淡橫線表格。僅讀取本機有記錄的對話；無法讀取的圖片有明確警示與逾時處理。[完整支援範圍與限制](codex-local/使用說明.md#排版與限制)
+
+## ChatGPT 網頁匯出功能
 
 - 頁面列印入口：選取匯出或全部已載入訊息快速預覽（12 pt）。
 - 搜尋、範圍、只選提問／回答、反選。
@@ -14,7 +35,7 @@ ChatGPT 對話選取與匯出工具：PDF、Markdown、JSON。繁體中文介面
 
 ## Chrome 安裝
 
-1. 從 [Releases](https://github.com/Joe05520/chat-conversation-exporter/releases) 下載 Chrome ZIP，解壓縮。
+1. 從 [Releases](https://github.com/Joe05520/codex-chatgpt-conversation-exporter/releases) 下載 Chrome ZIP，解壓縮。
 2. 開啟 `chrome://extensions`，啟用開發人員模式。
 3. 按「載入未封裝項目」，選擇解壓縮後直接包含 `manifest.json` 的資料夾（新版 Chrome ZIP 的最外層）。若下載的是 GitHub 原始碼 ZIP，則選其中的 `extension` 子資料夾。
 4. 允許 ChatGPT 網站存取，重新整理聊天頁面。

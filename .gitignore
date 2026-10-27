@@ -6,3 +6,6 @@ xcuserdata/
 *.xcuserstate
 
 dist/
+
+__pycache__/
+*.pyc

@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Codex 本機對話列印</title><link rel="stylesheet" href="vendor/katex/katex.min.css"><link rel="stylesheet" href="style.css"></head>
+<body>
+<aside class="controls"><header><span class="logo">C↗</span><div><h1>Codex 對話列印</h1><small>本機讀取 · PDF / Markdown / JSON</small></div></header>
+<label>搜尋本機對話<input id="search" type="search" placeholder="對話名稱或專案資料夾"></label><button id="refresh">重新整理對話清單</button><div id="sessions" aria-label="對話清單"></div>
+<p class="privacy">僅讀取這台 Mac 的 Codex 記錄，不會建立分享連結或上傳對話。使用完畢可關閉啟動工具的終端機視窗。</p></aside>
+<main><section class="controls toolbar"><div><strong id="chat-title">請先選擇對話</strong><p id="status" role="status">正在讀取本機對話清單…</p></div><div class="actions"><button id="md" disabled>下載 Markdown</button><button id="json" disabled>下載 JSON</button><button id="print" class="primary" disabled>列印／另存 PDF</button></div></section>
+<section class="controls settings"><label>文件標題<input id="title" placeholder="沿用對話名稱"></label><label>字體大小<select id="font"><option>10</option><option selected>12</option><option>14</option><option>16</option></select></label><label class="check"><input type="checkbox" id="progress">包含工作進度訊息</label><label class="check"><input type="checkbox" id="allow-missing">允許略過無法載入的圖片</label><div class="selection"><button id="all">全選</button><button id="answers">只選 Codex 回答</button><button id="none">清空</button><span id="count"></span></div></section>
+<section id="empty" class="empty"><h2>直接列印 Codex 本機對話</h2><p>從左側選對話，再勾選需要的訊息。PDF 預設 12 pt，保留表格、數學式、Mermaid 流程圖與仍可取得的本機圖片。</p><p>瀏覽器列印視窗中，目的地請選「另存為 PDF」。Safari 可在列印視窗下方的 PDF 選單儲存。</p></section>
+<div id="document"><header id="document-head"></header><div id="messages"></div></div>
+</main><script src="vendor/markdown-it.min.js"></script><script src="vendor/katex/katex.min.js"></script><script src="vendor/mermaid.min.js"></script><script src="app.js"></script></body></html>
